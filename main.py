@@ -16,7 +16,7 @@ def Analyze(input):
     normalizedImg = (black_tophat(normalizedImg, disk(12)))
     normalizedImg = cv2.GaussianBlur(normalizedImg, (5, 5), 3)
     # apply hough transform
-    circles = cv2.HoughCircles(normalizedImg, cv2.HOUGH_GRADIENT, 1, 100, param1=100, param2=10, minRadius=3, maxRadius=6)
+    circles = cv2.HoughCircles(normalizedImg, cv2.HOUGH_GRADIENT, 1, 100, param1=100, param2=5, minRadius=3, maxRadius=10)
     # place circles and cente rectangle on image
     if circles is not None:
         # Convert the circle parameters a, b and r to integers.
