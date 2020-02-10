@@ -4,7 +4,7 @@ import pydicom
 import cv2
 
 
-file = "/Users/adnanhafeez/Desktop/RI.QC_EPID_U07.MV_0_0a.dcm"
+file = "/Users/adnanhafeez/Desktop/RI.QC_EPID_U07.MV_0_0b.dcm"
 ds = pydicom.read_file(file)
 
 
@@ -27,6 +27,7 @@ def Otsu(im):
 
     val_max = -999
     thr = -1
+    opti = 45
     for t in range(1,255):
         # Non-efficient implementation
         q1 = np.sum(hist[:t])
@@ -36,7 +37,7 @@ def Otsu(im):
         val = q1*(1-q1)*np.power(m1-m2,2)
         if val_max < val:
             val_max = val
-            thr = t-90
+            thr = t
 
     print("Threshold: {}".format(thr))
 
@@ -52,11 +53,33 @@ def Otsu(im):
     #plt.subplot(122)
     #plt.imshow(im > thr)
     #plt.show()
-    print("Width = ", width, "Height = ", height, "Field Edges = ", findFieldEdge(-x.astype(np.uint8)))
-    plt.imshow(-im)
-    plt.arrow(findFieldEdge(-x.astype(np.uint8))[0], findFieldEdge(-x.astype(np.uint8))[1]*2, width, 0, head_width=40, head_length=40, linewidth=2, color='r', length_includes_head=True)
-    plt.arrow(findFieldEdge(-x.astype(np.uint8))[0]*2, findFieldEdge(-x.astype(np.uint8))[1], 0, height, head_width=40,
-              head_length=40, linewidth=2, color='r', length_includes_head=True)
+    print("Width = ", width, "Height = ", height, ", Field Edges = ", findFieldEdge(-x.astype(np.uint8)))
+    plt.imshow(im)
+    #plt.arrow(findFieldEdge(-x.astype(np.uint8))[0], findFieldEdge(-x.astype(np.uint8))[1]*2, width, 0, head_width=25, head_length=40, linewidth=2, color='r', length_includes_head=True,overhang=-0.2)
+    #plt.arrow(findFieldEdge(-x.astype(np.uint8))[0]*2, findFieldEdge(-x.astype(np.uint8))[1], 0, height, head_width=25,
+    #          head_length=40, linewidth=2, color='r', length_includes_head=True)
+
+
+    plt.annotate('', horizontalalignment='center',
+                xy=(findFieldEdge(-x.astype(np.uint8))[0]*2, findFieldEdge(-x.astype(np.uint8))[1]), xycoords='data',
+                xytext=(findFieldEdge(-x.astype(np.uint8))[0]*2, findFieldEdge(-x.astype(np.uint8))[1]+height), textcoords='data',
+                arrowprops=dict(arrowstyle="<->",
+                                connectionstyle="arc3", edgeColor='g'),
+                )
+
+    plt.annotate(height, xy=(findFieldEdge(-x.astype(np.uint8))[0]*2, findFieldEdge(-x.astype(np.uint8))[1]+height/2),
+                 xycoords='data', textcoords='data', ha='center',bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3))
+
+    plt.annotate('', horizontalalignment='center',
+                 xy=(findFieldEdge(-x.astype(np.uint8))[0], findFieldEdge(-x.astype(np.uint8))[1]*2), xycoords='data',
+                 xytext=(findFieldEdge(-x.astype(np.uint8))[0]+width, findFieldEdge(-x.astype(np.uint8))[1]*2),
+                 textcoords='data',
+                 arrowprops=dict(arrowstyle="<->",
+                                 connectionstyle="arc3", edgeColor='g')
+                 )
+    plt.annotate(width,
+                 xy=(findFieldEdge(-x.astype(np.uint8))[0]+width/2, findFieldEdge(-x.astype(np.uint8))[1]*2),
+                 xycoords='data', textcoords='data', ha='center',bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3))
 
     plt.show()
     print("Field Size:", 100/150*0.0392*width, "x", 100/150*0.0392*height, 'cm')
